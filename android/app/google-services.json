@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "366975511594",
+    "project_id": "animechan-3a640",
+    "storage_bucket": "animechan-3a640.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:366975511594:android:879aeee2fac66902cea753",
+        "android_client_info": {
+          "package_name": "com.example.animechan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "366975511594-t4s6lofmi99fgqqbgc0cjvhpdef7qt4s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAd7eOfCnwUY6eEvA8tf6bocckm1CfI6qg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "366975511594-t4s6lofmi99fgqqbgc0cjvhpdef7qt4s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:366975511594:android:443eb19e4c96b91acea753",
+        "android_client_info": {
+          "package_name": "com.example.animechanproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "366975511594-t4s6lofmi99fgqqbgc0cjvhpdef7qt4s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAd7eOfCnwUY6eEvA8tf6bocckm1CfI6qg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "366975511594-t4s6lofmi99fgqqbgc0cjvhpdef7qt4s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
