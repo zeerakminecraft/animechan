@@ -28,18 +28,6 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-
-
-  void _loadData() async{
-    await Future.delayed(const Duration(seconds: 2));
-    List<AnimeData> newlist = [];
-    final animeJson = await FetchData.tenRandomQuotes();
-    newlist = animeJson;
-    setState(() {
-      _animeJson = _animeJson + newlist;
-    });
-  }
-
   bool isLoading = false;
 
   @override
@@ -60,95 +48,142 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  bool check = false;
+
   @override
   Widget build(BuildContext context) {
     if(_animeJson.isNotEmpty){
       return Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                TextField(
-                  onChanged: (value) {
-                    animename = value;
+        body: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: TextButton(
+                  child: const Text('Sign Out'),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
+                    foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+                  ),
+                  onPressed: () async{
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.pop(context);
                   },
-                  decoration: kTextFieldDecoration.copyWith(hintText: 'Enter your email address'),
                 ),
-                ElevatedButton(
-                  child: Text('Search by anime'),
-                  onPressed: (){
-                    searchbyName();
-                  },
-                )
-              ],
-            ),
-            Align(
-              alignment: Alignment.topLeft,
-              child: TextButton(
-                child: const Text('Sign Out'),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
-                  foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                ),
-                onPressed: () async{
-                  await FirebaseAuth.instance.signOut();
-                },
               ),
-            ),
-            Expanded(
-              child: StreamBuilder<List<AnimeData>>(
-                builder: (BuildContext context,snapshot){
-                  if (snapshot.hasError || snapshot.data == null) {
-                    return const Text('Something went wrong');
-                  }
-
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Text("Loading");
-                  }
-                  final likedAnime = snapshot.data;
-                  return ListView.builder(
-                      itemCount: _animeJson.length,
-                      itemBuilder: (context, i){
-                        final anime = _animeJson[i];
-                        bool check = likedAnime.any((element) => element==anime);
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
+              TextField(
+                onChanged: (value){
+                  animename=value;
+                },
+                decoration: kTextFieldDecoration.copyWith(hintText: 'Search by anime name'),
+              ),
+              ElevatedButton(
+                child: Text('Search'),
+                onPressed: searchbyName,
+              ),
+              Expanded(
+                child: ListView.builder(
+                    itemCount: _animeJson.length,
+                    // shrinkWrap: true,
+                    itemBuilder: (context, i){
+                      final anime = _animeJson[i];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
                               builder: (context) => QuoteScreen(anime: anime),
+                            ),
+                          );
+                        },
+                        child: Card(
+                          child: ListTile(
+                            tileColor: Colors.white,
+                            dense: true,
+                            title: Text(
+                                anime.quote
+                            ),
+                            subtitle: Text(
+                                anime.character
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(
+                                Icons.favorite,
                               ),
-                            );
-                          },
-                          child: Card(
-                            child: ListTile(
-                              tileColor: Colors.white,
-                              dense: true,
-                              title: Text(
-                                  anime.quote
-                              ),
-                              subtitle: Text(
-                                  anime.character
-                              ),
-                              trailing: IconButton(
-                                icon: const Icon(
-                                  Icons.favorite,
-                                ),
-                                color: check? Colors.red : Colors.blueGrey,
-                                onPressed: (){
-                                  FirestoreDoc.addLikes(anime: anime, uid: FirebaseAuth.instance.currentUser!.uid);
-                                },
-                              ),
+                              color: check? Colors.red : Colors.blueGrey,
+                              onPressed: (){
+                                FirestoreDoc.addLikes(anime: anime, uid: FirebaseAuth.instance.currentUser!.uid);
+                                setState(() {
+                                  check ? false : true;
+                                });
+                              },
                             ),
                           ),
-                        );
-                      }
-                  );
-                },
+                        ),
+                      );
+                    }
+                ),
+                // StreamBuilder<List<AnimeData>>(
+                //   stream: _likedanime,
+                //   builder: (BuildContext context,snapshot){
+                //     if (snapshot.hasError || snapshot.data == null) {
+                //       return const Text('Something went wrong');
+                //     }
+                //
+                //     if (snapshot.connectionState == ConnectionState.waiting) {
+                //       return const Text("Loading");
+                //     }
+                //     final likedAnime = snapshot.data!;
+                //     return ListView.builder(
+                //         itemCount: _animeJson.length,
+                //         // shrinkWrap: true,
+                //         itemBuilder: (context, i){
+                //           final anime = _animeJson[i];
+                //           bool check = likedAnime.any((element) => element==anime);
+                //           return GestureDetector(
+                //             onTap: () {
+                //               Navigator.push(
+                //                 context,
+                //                 MaterialPageRoute(
+                //                 builder: (context) => QuoteScreen(anime: anime),
+                //                 ),
+                //               );
+                //             },
+                //             child: Card(
+                //               child: ListTile(
+                //                 tileColor: Colors.white,
+                //                 dense: true,
+                //                 title: Text(
+                //                     anime.quote
+                //                 ),
+                //                 subtitle: Text(
+                //                     anime.character
+                //                 ),
+                //                 trailing: IconButton(
+                //                   icon: const Icon(
+                //                     Icons.favorite,
+                //                   ),
+                //                   color: check? Colors.red : Colors.blueGrey,
+                //                   onPressed: (){
+                //                     FirestoreDoc.addLikes(anime: anime, uid: FirebaseAuth.instance.currentUser!.uid);
+                //                   },
+                //                 ),
+                //               ),
+                //             ),
+                //           );
+                //         }
+                //     );
+                //   },
+                // ),
               ),
-            ),
-          ],
+              const SizedBox(height: 5,),
+              ElevatedButton(
+                child: Text('Load More'),
+                onPressed: populateAnime,
+              )
+            ],
+          ),
         ),
       );
 

@@ -4,8 +4,11 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:provider/provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:animechanproject/controller/screenshot.dart';
+
 
 class QuoteScreen extends StatefulWidget {
   const QuoteScreen({Key? key, required this.anime}) : super(key: key);
@@ -17,43 +20,81 @@ class QuoteScreen extends StatefulWidget {
 
 class _QuoteScreenState extends State<QuoteScreen> {
 
-  takeScreenShot() async{
-    RenderRepaintBoundary boundary = previewContainer.currentContext.findRenderObject();
-    ui.Image image = await boundary.toImage();
-    final directory = (await getApplicationDocumentsDirectory()).path;
-    ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    Uint8List pngBytes = byteData!.buffer.asUint8List();
-    print(pngBytes);
-    File imgFile = File('$directory/screenshot+${widget.anime.anime}+${widget.anime.character}+${widget.anime.quote}.png');
-    imgFile.writeAsBytes(pngBytes);
+  ScreenshotController screenshotController = ScreenshotController();
+
+  // static GlobalKey previewContainer = GlobalKey();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+  }
+
+  Future<dynamic> ShowCapturedWidget(
+      BuildContext context, Uint8List capturedImage) {
+    return showDialog(
+      useSafeArea: false,
+      context: context,
+      builder: (context) => Scaffold(
+        appBar: AppBar(
+          title: Text("Captured widget screenshot"),
+        ),
+        body: Center(
+            child: capturedImage != null
+                ? Image.memory(capturedImage)
+                : Container()),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          children: [
-            Text(
-              widget.anime.quote,
-              style: TextStyle(
-                fontSize: 30,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: Screenshot(
+                  controller: screenshotController,
+                  child: Column(
+                    children: [
+                      Text(
+                        widget.anime.quote,
+                        style: TextStyle(
+                          fontSize: 30,
+                        ),
+                      ),
+                      SizedBox(height: 10,),
+                      Text(
+                        '~ ${widget.anime.character}\n\n${widget.anime.anime}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
               ),
-            ),
-            SizedBox(height: 10,),
-            Text(
-              '~ ${widget.anime.character}\n\n${widget.anime.anime}',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  final image = screenshotController.capture();
+                  // final result = await ImageGallerySaver.saveImage(image);
+                  screenshotController
+                      .capture(delay: Duration(milliseconds: 10))
+                      .then((capturedImage) async {
+                    ShowCapturedWidget(context, capturedImage!);
+                  }).catchError((onError) {
+                    print(onError);
+                  });
+                },
+                child: Text('Save'),
               ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: takeScreenShot(),
-              child: Text('Save'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
