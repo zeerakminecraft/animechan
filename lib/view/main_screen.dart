@@ -1,6 +1,7 @@
 
 import 'package:animechanproject/controller/writing_data.dart';
 import 'package:animechanproject/model/anime_datamodel.dart';
+import 'package:animechanproject/view/quote_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -111,24 +112,34 @@ class _MainScreenState extends State<MainScreen> {
                       itemBuilder: (context, i){
                         final anime = _animeJson[i];
                         bool check = likedAnime.any((element) => element==anime);
-                        return Card(
-                          child: ListTile(
-                            tileColor: Colors.white,
-                            dense: true,
-                            title: Text(
-                                anime.quote
-                            ),
-                            subtitle: Text(
-                                anime.character
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(
-                                Icons.favorite,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                              builder: (context) => QuoteScreen(anime: anime),
                               ),
-                              color: check? Colors.red : Colors.blueGrey,
-                              onPressed: (){
-                                FirestoreDoc.addLikes(anime: anime, uid: FirebaseAuth.instance.currentUser!.uid);
-                              },
+                            );
+                          },
+                          child: Card(
+                            child: ListTile(
+                              tileColor: Colors.white,
+                              dense: true,
+                              title: Text(
+                                  anime.quote
+                              ),
+                              subtitle: Text(
+                                  anime.character
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(
+                                  Icons.favorite,
+                                ),
+                                color: check? Colors.red : Colors.blueGrey,
+                                onPressed: (){
+                                  FirestoreDoc.addLikes(anime: anime, uid: FirebaseAuth.instance.currentUser!.uid);
+                                },
+                              ),
                             ),
                           ),
                         );
