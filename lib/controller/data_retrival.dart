@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:animechanproject/model/anime_datamodel.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class FetchData{
@@ -27,5 +28,14 @@ class FetchData{
     }
   }
 
-
+  static Stream<List<AnimeData>> populateLikedAnime(String uid){
+    final documentStream = FirebaseFirestore.instance.collection('likedquotes').doc(uid).snapshots();
+    // return documentStream.map((event) => AnimeData.fromJson(event.data()));
+  }
 }
+
+// (doc) => AnimeData(
+// anime: doc.data['anime'],
+// character: doc.data['character'],
+// quote: doc.data['quote'],
+)

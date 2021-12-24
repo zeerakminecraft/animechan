@@ -6,11 +6,11 @@ import 'package:animechanproject/view/main_screen.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   final x =  await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
